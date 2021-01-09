@@ -13,6 +13,7 @@ namespace HeadlessChromium\Communication;
 
 use Evenement\EventEmitter;
 use HeadlessChromium\Communication\Socket\SocketInterface;
+use HeadlessChromium\Communication\Socket\Textalk;
 use HeadlessChromium\Communication\Socket\Wrench;
 use HeadlessChromium\Exception\CommunicationException;
 use HeadlessChromium\Exception\CommunicationException\InvalidResponse;
@@ -95,7 +96,8 @@ class Connection extends EventEmitter implements LoggerAwareInterface
 
         // create socket client
         if (is_string($socketClient)) {
-            $socketClient = new Wrench(new WrenchBaseClient($socketClient, 'http://127.0.0.1'), $this->logger);
+            $socketClient = Textalk::build($socketClient, 'http://127.0.0.1', $this->logger);
+            // $socketClient = new Wrench(new WrenchBaseClient($socketClient, 'http://127.0.0.1'), $this->logger);
         } elseif (!is_object($socketClient) && !$socketClient instanceof SocketInterface) {
             throw new \InvalidArgumentException(
                 '$socketClient param should be either a SockInterface instance or a web socket uri string'
