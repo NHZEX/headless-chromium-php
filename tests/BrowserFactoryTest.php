@@ -16,6 +16,9 @@ use HeadlessChromium\Communication\Socket\MockSocket;
 use HeadlessChromium\Communication\Socket\SocketInterface;
 use HeadlessChromium\Communication\SocketCreateInterface;
 use HeadlessChromium\Communication\Target;
+use HeadlessChromium\Test\Communication\Socket\TestSocketDrive;
+use HeadlessChromium\Test\Communication\Socket\TestSocketDriveNotSocketCreate;
+use HeadlessChromium\Test\Communication\Socket\TestSocketDriveNotSocketCreateInterface;
 use PHPUnit\Runner\Version;
 use Psr\Log\LoggerInterface;
 
@@ -114,27 +117,5 @@ class BrowserFactoryTest extends BaseTestCase
         } catch (\TypeError $error) {
             $this->assertMatchesRegularExpression('/^class (.+) does not implement (.+)$/', $error->getMessage());
         }
-    }
-}
-
-class TestSocketDrive extends MockSocket implements SocketCreateInterface
-{
-
-    public static function create(string $url, LoggerInterface $logger = null): SocketInterface
-    {
-        return new static();
-    }
-}
-
-class TestSocketDriveNotSocketCreateInterface extends MockSocket
-{
-}
-
-class TestSocketDriveNotSocketCreate implements SocketCreateInterface
-{
-
-    public static function create(string $url, LoggerInterface $logger = null): SocketInterface
-    {
-        return new class extends MockSocket {};
     }
 }

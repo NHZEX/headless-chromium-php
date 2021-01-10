@@ -184,16 +184,16 @@ class BrowserFactory
     {
         if ($classname !== null) {
             if (!\class_exists($classname)) {
-                throw new \TypeError(\sprintf("class %s does not exist", $classname));
+                throw new \TypeError(\sprintf('class %s does not exist', $classname));
             }
             if (!\is_subclass_of($classname, SocketCreateInterface::class)) {
                 throw new \TypeError(
-                    \sprintf("class %s does not implement %s", $classname, SocketCreateInterface::class)
+                    \sprintf('class %s does not implement %s', $classname, SocketCreateInterface::class)
                 );
             }
             if (!\is_subclass_of($classname, SocketInterface::class)) {
                 throw new \TypeError(
-                    \sprintf("class %s does not implement %s", $classname, SocketInterface::class)
+                    \sprintf('class %s does not implement %s', $classname, SocketInterface::class)
                 );
             }
         }
