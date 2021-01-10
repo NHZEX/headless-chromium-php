@@ -162,6 +162,7 @@ class Connection extends EventEmitter implements LoggerAwareInterface
      */
     public function disconnect()
     {
+        $this->receivedData = [];
         return $this->wsClient->disconnect();
     }
 
