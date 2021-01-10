@@ -12,7 +12,12 @@
 namespace HeadlessChromium\Test;
 
 use HeadlessChromium\BrowserFactory;
+use HeadlessChromium\Communication\Socket\MockSocket;
+use HeadlessChromium\Communication\Socket\SocketInterface;
+use HeadlessChromium\Communication\SocketCreateInterface;
 use HeadlessChromium\Communication\Target;
+use PHPUnit\Runner\Version;
+use Psr\Log\LoggerInterface;
 
 /**
  * @covers \HeadlessChromium\BrowserFactory
@@ -78,11 +83,58 @@ class BrowserFactoryTest extends BaseTestCase
         $page2 = $browser->createPage();
         $page2TargetId = $page2->getSession()->getTargetId();
 
-        // update 2d browser
-        $browser2->getConnection()->readData();
+        $limit = 10;
+        do {
+            $browser2->getConnection()->readData();
+            usleep(1000 * 10);
+        } while ($browser2->getTarget($page2TargetId) === null && $limit--);
 
         // make sure 2nd browser received the new page
         $target = $browser2->getTarget($page2TargetId);
         $this->assertInstanceOf(Target::class, $target);
+    }
+
+    public function testDefaultSocketDrive()
+    {
+        BrowserFactory::setDefaultSocketDrive(TestSocketDrive::class);
+        $this->assertEquals(TestSocketDrive::class, BrowserFactory::getDefaultSocketDrive());
+
+        try {
+            BrowserFactory::setDefaultSocketDrive('\\NotClassName');
+        } catch (\TypeError $error) {
+            $this->assertMatchesRegularExpression('/^class (.+) does not exist$/', $error->getMessage());
+        }
+        try {
+            BrowserFactory::setDefaultSocketDrive(TestSocketDriveNotSocketCreateInterface::class);
+        } catch (\TypeError $error) {
+            $this->assertMatchesRegularExpression('/^class (.+) does not implement (.+)$/', $error->getMessage());
+        }
+        try {
+            BrowserFactory::setDefaultSocketDrive(TestSocketDriveNotSocketCreate::class);
+        } catch (\TypeError $error) {
+            $this->assertMatchesRegularExpression('/^class (.+) does not implement (.+)$/', $error->getMessage());
+        }
+    }
+}
+
+class TestSocketDrive extends MockSocket implements SocketCreateInterface
+{
+
+    public static function create(string $url, LoggerInterface $logger = null): SocketInterface
+    {
+        return new static();
+    }
+}
+
+class TestSocketDriveNotSocketCreateInterface extends MockSocket
+{
+}
+
+class TestSocketDriveNotSocketCreate implements SocketCreateInterface
+{
+
+    public static function create(string $url, LoggerInterface $logger = null): SocketInterface
+    {
+        return new class extends MockSocket {};
     }
 }
