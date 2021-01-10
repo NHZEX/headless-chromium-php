@@ -11,6 +11,7 @@
 
 namespace HeadlessChromium\Test;
 
+use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
 
 class HttpEnabledTestCase extends BaseTestCase
@@ -22,8 +23,9 @@ class HttpEnabledTestCase extends BaseTestCase
     {
         parent::setUpBeforeClass();
 
+        $finder = new PhpExecutableFinder();
         self::$process = new Process([
-            'php',
+            $finder->find(false),
             '-S',
             'localhost:8083',
             '-t',

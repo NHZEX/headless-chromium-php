@@ -184,7 +184,7 @@ class PageTest extends BaseTestCase
 
         $this->assertEquals('isIncluded', $isIncluded);
         $this->assertStringStartsWith('file://', $scriptSrc);
-        $this->assertStringEndsWith('/jsInclude.js', $scriptSrc);
+        $this->assertStringEndsWith(DIRECTORY_SEPARATOR . 'jsInclude.js', $scriptSrc);
     }
 
     public function testGetLayoutMetrics()

@@ -26,7 +26,11 @@ class BrowserFactoryTest extends BaseTestCase
 
         $browser = $factory->createBrowser();
 
-        $this->assertRegExp('#^ws://#', $browser->getSocketUri());
+        if (version_compare(Version::id(), '9.0', '>=')) {
+            $this->assertMatchesRegularExpression('#^ws://#', $browser->getSocketUri());
+        } else {
+            $this->assertRegExp('#^ws://#', $browser->getSocketUri());
+        }
     }
 
     public function testWindowSizeOption()
