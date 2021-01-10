@@ -12,15 +12,11 @@
 namespace HeadlessChromium\Test;
 
 use HeadlessChromium\BrowserFactory;
-use HeadlessChromium\Communication\Socket\MockSocket;
-use HeadlessChromium\Communication\Socket\SocketInterface;
-use HeadlessChromium\Communication\SocketCreateInterface;
 use HeadlessChromium\Communication\Target;
 use HeadlessChromium\Test\Communication\Socket\TestSocketDrive;
 use HeadlessChromium\Test\Communication\Socket\TestSocketDriveNotSocketCreate;
 use HeadlessChromium\Test\Communication\Socket\TestSocketDriveNotSocketCreateInterface;
 use PHPUnit\Runner\Version;
-use Psr\Log\LoggerInterface;
 
 /**
  * @covers \HeadlessChromium\BrowserFactory
@@ -99,6 +95,8 @@ class BrowserFactoryTest extends BaseTestCase
 
     public function testDefaultSocketDrive()
     {
+        $storage = BrowserFactory::getDefaultSocketDrive();
+
         BrowserFactory::setDefaultSocketDrive(TestSocketDrive::class);
         $this->assertEquals(TestSocketDrive::class, BrowserFactory::getDefaultSocketDrive());
 
@@ -117,5 +115,7 @@ class BrowserFactoryTest extends BaseTestCase
         } catch (\TypeError $error) {
             $this->assertMatchesRegularExpression('/^class (.+) does not implement (.+)$/', $error->getMessage());
         }
+
+        BrowserFactory::setDefaultSocketDrive($storage);
     }
 }
