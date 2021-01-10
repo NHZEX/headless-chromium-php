@@ -11,14 +11,16 @@
 
 namespace HeadlessChromium\Communication\Socket;
 
+use HeadlessChromium\Communication\SocketCreateInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Wrench\Client as WrenchClient;
 use Wrench\Payload\Payload;
+use Wrench\Client as WrenchBaseClient;
 
-class Wrench implements SocketInterface, LoggerAwareInterface
+class Wrench implements SocketInterface, SocketCreateInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -38,6 +40,11 @@ class Wrench implements SocketInterface, LoggerAwareInterface
      * @var int
      */
     protected $socketId = 0;
+
+    public static function create(string $url, LoggerInterface $logger = null): SocketInterface
+    {
+        return new Wrench(new WrenchBaseClient($url, 'http://127.0.0.1'), $logger);
+    }
 
     /**
      * @param WrenchClient $client

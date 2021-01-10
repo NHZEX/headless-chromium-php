@@ -12,6 +12,7 @@
 namespace HeadlessChromium\Communication;
 
 use Evenement\EventEmitter;
+use HeadlessChromium\BrowserFactory;
 use HeadlessChromium\Communication\Socket\SocketInterface;
 use HeadlessChromium\Communication\Socket\Wrench;
 use HeadlessChromium\Exception\CommunicationException;
@@ -23,7 +24,6 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Wrench\Client as WrenchBaseClient;
 
 class Connection extends EventEmitter implements LoggerAwareInterface
 {
@@ -95,7 +95,13 @@ class Connection extends EventEmitter implements LoggerAwareInterface
 
         // create socket client
         if (is_string($socketClient)) {
-            $socketClient = new Wrench(new WrenchBaseClient($socketClient, 'http://127.0.0.1'), $this->logger);
+            /** @var SocketCreateInterface|null $drive */
+            $drive = BrowserFactory::getDefaultSocketDrive();
+            if ($drive === null) {
+                $socketClient = Wrench::create($socketClient, $this->logger);
+            } else {
+                $socketClient = $drive::create($socketClient, $this->logger);
+            }
         } elseif (!is_object($socketClient) && !$socketClient instanceof SocketInterface) {
             throw new \InvalidArgumentException(
                 '$socketClient param should be either a SockInterface instance or a web socket uri string'

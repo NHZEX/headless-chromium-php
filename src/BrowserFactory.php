@@ -15,6 +15,8 @@ use Apix\Log\Logger\Stream as StreamLogger;
 use HeadlessChromium\Browser\BrowserProcess;
 use HeadlessChromium\Browser\ProcessAwareBrowser;
 use HeadlessChromium\Communication\Connection;
+use HeadlessChromium\Communication\Socket\SocketInterface;
+use HeadlessChromium\Communication\SocketCreateInterface;
 use HeadlessChromium\Exception\BrowserConnectionFailed;
 use Symfony\Component\Process\Process;
 use Wrench\Exception\HandshakeException;
@@ -22,6 +24,9 @@ use Wrench\Exception\HandshakeException;
 class BrowserFactory
 {
     protected $chromeBinary;
+
+    /** @var string|null */
+    protected static $defaultSocketDrive;
 
     public function __construct(string $chromeBinary = null)
     {
@@ -170,5 +175,36 @@ class BrowserFactory
         }
 
         return $logger;
+    }
+
+    /**
+     * @param string|null $classname
+     */
+    public static function setDefaultSocketDrive(?string $classname)
+    {
+        if ($classname !== null) {
+            if (!\class_exists($classname)) {
+                throw new \TypeError(\sprintf("class %s does not exist", $classname));
+            }
+            if (!\is_subclass_of($classname, SocketCreateInterface::class)) {
+                throw new \TypeError(
+                    \sprintf("class %s does not implement %s", $classname, SocketCreateInterface::class)
+                );
+            }
+            if (!\is_subclass_of($classname, SocketInterface::class)) {
+                throw new \TypeError(
+                    \sprintf("class %s does not implement %s", $classname, SocketInterface::class)
+                );
+            }
+        }
+        static::$defaultSocketDrive = $classname;
+    }
+
+    /**
+     * @return string|null
+     */
+    public static function getDefaultSocketDrive(): ?string
+    {
+        return self::$defaultSocketDrive;
     }
 }
