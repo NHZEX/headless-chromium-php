@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace HeadlessChromium\Test\Communication\Socket;
@@ -22,7 +23,7 @@ class Textalk implements SocketInterface, SocketCreateInterface, LoggerAwareInte
     private static $socketIdCounter = 0;
 
     /**
-     * @var Client
+     * @var Client|null
      */
     protected $client;
 
