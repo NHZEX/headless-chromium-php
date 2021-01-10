@@ -11,6 +11,6 @@ class TestSocketDrive extends MockSocket implements SocketCreateInterface
 {
     public static function create(string $url, LoggerInterface $logger = null): SocketInterface
     {
-        return new static();
+        return new self();
     }
 }

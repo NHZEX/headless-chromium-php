@@ -43,7 +43,7 @@ class Wrench implements SocketInterface, SocketCreateInterface, LoggerAwareInter
 
     public static function create(string $url, LoggerInterface $logger = null): SocketInterface
     {
-        return new Wrench(new WrenchBaseClient($url, 'http://127.0.0.1'), $logger);
+        return new self(new WrenchBaseClient($url, 'http://127.0.0.1'), $logger);
     }
 
     /**
