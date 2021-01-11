@@ -111,6 +111,11 @@ class Connection extends EventEmitter implements LoggerAwareInterface
         $this->wsClient = $socketClient;
     }
 
+    public function __destruct()
+    {
+        $this->disconnect();
+    }
+
     /**
      * @return LoggerInterface
      */
@@ -169,7 +174,14 @@ class Connection extends EventEmitter implements LoggerAwareInterface
     public function disconnect()
     {
         $this->receivedData = [];
-        return $this->wsClient->disconnect();
+        $this->responseBuffer = [];
+        if ($this->wsClient instanceof SocketInterface) {
+            $result = $this->wsClient->disconnect();
+	    $this->wsClient = null;
+	    return $result; 
+        } else {
+            return true;
+        }
     }
 
     /**
