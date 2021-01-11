@@ -54,7 +54,7 @@ class Connection extends EventEmitter implements LoggerAwareInterface
     private $lastMessageSentTime;
 
     /**
-     * @var SocketInterface
+     * @var SocketInterface|null
      */
     protected $wsClient;
 
@@ -177,8 +177,8 @@ class Connection extends EventEmitter implements LoggerAwareInterface
         $this->responseBuffer = [];
         if ($this->wsClient instanceof SocketInterface) {
             $result = $this->wsClient->disconnect();
-	    $this->wsClient = null;
-	    return $result; 
+            $this->wsClient = null;
+            return $result;
         } else {
             return true;
         }
